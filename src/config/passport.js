@@ -84,7 +84,7 @@ export function initializePassport(){
 
           if (!user) return done(null, false);
 
-          return done(null, user);
+          return done(null, payload);
         } catch (error) {
           console.log(done(error));
           return done(error);

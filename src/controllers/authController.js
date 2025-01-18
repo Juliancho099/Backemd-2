@@ -7,7 +7,6 @@ const register = (req, res) => {
 
 const login = (req,res)=>{
     const token = req.token;
-    
     res.cookie('token', token,{
         httpOnly: true,
         maxAge: 1000*60*60 *24*7,

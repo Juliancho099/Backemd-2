@@ -5,8 +5,7 @@ const userRouter= Router();
 
 userRouter.get('/', async (req, res )=>{
     try {
-        console.log(req.user);
-        const user = {name: req.user.first_name, email: req.user.email, id: req.user._id};
+        const user = req.user;
         if(!user) return res.status(404).json({message: 'User not found'});
 
         res.status(200).json(user);

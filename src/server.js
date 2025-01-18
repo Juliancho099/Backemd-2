@@ -22,7 +22,7 @@ app.use(express.static('public'));
 
 app.use('/api/auth', sessionRouter);
 app.use('/api/products',passport.authenticate('jwt', {session: false}), productsRouter)
-app.use('/api/users',passport.authenticate('jwt', {session: false}), userRouter);
+app.use('/api/current',passport.authenticate('jwt', {session: false}), userRouter);
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
