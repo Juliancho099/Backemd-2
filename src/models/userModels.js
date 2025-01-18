@@ -21,7 +21,7 @@ const userSchema = new Schema({
   cartId:{
     type: Schema.Types.ObjectId,
     ref: 'carts',
-    default: null
+    default: []
   },
   role: {
     type: String,
