@@ -1,5 +1,5 @@
 import { model, Schema } from "mongoose";
-import { hashPassword } from "../utils/passworUtils.js";
+import { hashPassword } from "../../utils/passworUtils.js";
 
 const userSchema = new Schema({
   first_name: {
@@ -13,10 +13,13 @@ const userSchema = new Schema({
   email: {
     type: String,
     required: true,
-    unique: true,
-    lowercase: true,  // Asegura que el email esté en minúsculas
+    unique: true, 
     trim: true,       // Elimina espacios innecesarios
-  },
+},
+password: {
+  type: String,
+  required: true,
+},
   age: {
     type: Number,
     required: true,
@@ -32,10 +35,14 @@ const userSchema = new Schema({
     enum: ["admin", "user"],
     default: "user",
   },
-  password: {
-    type: String,
-    required: true,
+  orders:{
+    type: Schema.Types.ObjectId,
+    ref: 'orders',
   },
+    created_at: {
+        type: Date,
+        default: Date.now,
+    },
 });
 
 // Middleware para validaciones y hash de contraseña

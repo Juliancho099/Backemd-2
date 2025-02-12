@@ -3,7 +3,7 @@ import { Strategy as JWTStrategy, ExtractJwt } from "passport-jwt";
 import { Strategy as LocalStrategy } from "passport-local";
 
 import { createToken, SECRET } from "../utils/jwtUtils.js";
-import { User } from "../models/userModels.js";
+import { User } from "../dao/models/user.model.js";
 import { comparePassword } from "../utils/passworUtils.js";
 
 export function initializePassport(){
@@ -14,27 +14,34 @@ export function initializePassport(){
         passReqToCallback: true,
         usernameField: 'email',
       },
-      async (req, email, password, done)=>{
+      async (req, email, password, done) => {
         try {
           const { first_name, last_name, age, role } = req.body;
-
-          if(!first_name || !last_name || !age){
-            return done(null, false, {message: 'Please fill all fields'});
+  
+          // Validaciones de campos requeridos
+          if (!first_name || !last_name || !email || !password || !age) {
+            return done(null, false, { message: 'Please fill all fields' });
           }
-
-          const user = await User.create({
+  
+          // Verificar si el usuario ya existe
+          const existingUser = await User.findOne({ email });
+          if (existingUser) {
+            return done(null, false, { message: 'Email is already registered' });
+          }
+  
+          // Crear el nuevo usuario
+          const newUser = await User.create({
             first_name,
             last_name,
             email,
             password,
             age,
-            role,
-          })
-
-          return done(null, user);
+            role, 
+          });
+  
+          return done(null, newUser);
         } catch (error) {
-            console.log(error)
-            done({message: error.message, status: 'hola el error esta aqui' });;
+          return done(error);
         }
       }
     )

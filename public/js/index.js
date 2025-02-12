@@ -10,12 +10,12 @@ form.addEventListener('submit', async (e)=>{
     const age = parseInt(document.querySelector('#age').value)
     const password = document.querySelector('#password').value
 
-    const response = await fetch("http://localhost:3000/api/auth/register", {
+    const response = await fetch("http://localhost:8080/api/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({first_name, last_name, email, age, password }),
+        body: JSON.stringify({first_name, last_name, email, password, age }),
       });
     
       const data = await response.json();
@@ -31,7 +31,7 @@ formLogin.addEventListener("submit", async (e) => {
     const email = document.getElementById("email2").value;
     const password = document.getElementById("password2").value;
   
-    const response = await fetch("http://localhost:3000/api/auth/login", {
+    const response = await fetch("http://localhost:8080/api/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
