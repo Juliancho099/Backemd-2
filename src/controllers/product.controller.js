@@ -27,6 +27,7 @@ export class ProductController {
 
     async create(req, res){
         const product = req.body;
+
         try {
             const newProduct = await productDao.create(product);
             res.send({status: "success", data: newProduct});

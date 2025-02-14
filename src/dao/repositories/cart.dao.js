@@ -1,18 +1,20 @@
 import { CartModel } from '../models/cart.model.js';
 
 export class CartDao {
-    async getAll (id){
-        const cart = await CartModel.find({id});
-        return cart;
-    }
+  async getAll(userId) {
+    return await CartModel.find({ user: userId }).populate("products.product");
+}
+
+  
 
     async getById(id){
-        return await CartModel.findById(id);
+        return await CartModel.findById(id).populate("products.product");
     }
 
-    async getByUserId(userId){
-        return await CartModel.findOne({userId});
+    async getByUserId(userId) {
+      return await CartModel.findOne({ user: userId }).populate("products.product");
     }
+    
 
     async create(cart){
         return await CartModel.create(cart);
@@ -27,23 +29,16 @@ export class CartDao {
     }
 
     async removePurchasedProducts(cartId, products) {
-        console.log("🛒 Eliminando productos comprados del carrito...");
-        console.log("📌 ID del carrito:", cartId);
-        console.log("📌 Productos a eliminar:", products);
       
         try {
-          // Verifica que el carrito exista
           const cart = await CartModel.findById(cartId);
           if (!cart) {
             throw new Error("Carrito no encontrado");
           }
-      
-          // Filtra los productos comprados y elimina solo esos
           cart.products = cart.products.filter(p => 
             !products.some(purchased => purchased.product.toString() === p._id.toString())
           );
-      
-          console.log("✅ Productos restantes en el carrito:", cart.products);
+    
           
           await cart.save();
           return cart;
