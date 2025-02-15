@@ -1,6 +1,7 @@
 import { CartDao } from "../dao/repositories/cart.dao.js";
 import { ProductDao } from "../dao/repositories/product.dao.js";
 import { Ticket } from "../dao/models/ticket.model.js";
+import mongoose from "mongoose";
 
 
 
@@ -22,9 +23,10 @@ export class CartController {
   }
 
   async getById(req, res) {
-    const { id } = req.params;
+    const { cid } = req.params;
     try {
-      const cart = await cartDao.getById(id);
+      const cart = await cartDao.getById(cid);
+      console.log("Carrito obtenido:", cart);
       res.send({ status: "success", data: cart });
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -70,54 +72,49 @@ export class CartController {
   }
 
   async addProduct(req, res) {
-    const { id, pid } = req.params;
-    const { products } = req.body;
-    const userid = req.user.id;
-    const quantity = products?.[0]?.quantity;
-  
     try {
-      console.log("REQ.PARAMS:", req.params);
-      console.log("REQ.BODY:", req.body);
-      console.log("Extracted Quantity:", quantity);
-  
-      if (!quantity || quantity <= 0) {
-        return res.status(400).json({ message: "Invalid quantity" });
-      }
+        const { cid, pid } = req.params;
+        const { products } = req.body;
+        const quantity = products?.[0]?.quantity;
 
-  
-      const cart = await cartDao.getById(id);
-      console.log("Carrito obtenido:", cart);
-  
-      if (!cart) {
-        return res.status(404).json({ message: "Cart not found" });
-      }
-  
-      const product = await productDao.getById(pid);
-      if (!product) {
-        return res.status(404).json({ message: "Product not found" });
-      }
-  
-      cart.products = cart.products || [];
-      console.log("Productos en el carrito:", cart.products);
-  
-      const productInCart = cart.products.find((p) => p.product.toString() === pid);
-  
-      if (productInCart) {
-        productInCart.quantity += quantity;
-        console.log("Nueva cantidad:", productInCart.quantity);
-      } else {
-        cart.products.push({ product: pid, quantity });
-      }
-  
-      await cartDao.update(cart._id, cart);
-  
-      res.status(201).send({ status: "success", data: "Product added", cart });
-  
+        if (!quantity || quantity <= 0) {
+            return res.status(400).json({ message: "Invalid quantity" });
+        }
+
+        const cart = await cartDao.getById(cid);
+
+        if (!cart) {
+            return res.status(404).json({ message: "Cart not found" });
+        }
+
+        const product = await productDao.getById(pid);
+        if (!product) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+
+        cart.products = cart.products || [];
+
+        const pidObjectId = new mongoose.Types.ObjectId(pid);
+
+        const productIndex = cart.products.findIndex((p) => p.product.equals(pidObjectId));
+
+        if (productIndex !== -1) {
+            cart.products[productIndex].quantity += quantity;
+            console.log("🟢 Producto actualizado");
+        } else {
+            cart.products.push({ product: pidObjectId, quantity });
+        }
+
+        await cart.save(); 
+
+        res.status(201).send({ status: "success", data: "Product added", cart });
+
     } catch (error) {
-      console.error("❌ Error en addProduct:", error);
-      res.status(500).json({ message: error.message });
+        console.error("❌ Error en addProduct:", error);
+        res.status(500).json({ message: error.message });
     }
-  }
+}
+
   
 
   async purchaseCart(req, res) {
