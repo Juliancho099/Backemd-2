@@ -1,3 +1,14 @@
+//Entrega Final
+propyecto con funcionalidades nuevas segun lo solicitado
+si queres probar tenes el user admin:
+email:toscano21@gmail.com
+pass: 12345678
+
+User:
+email:toscano23@gmail.com
+pass: 12345678
+
+
 // Primer entrega backend 2 de julian toscano.
 
 En este proyecto encontraras un sistema de login con diferentes estrategias de login y registro.

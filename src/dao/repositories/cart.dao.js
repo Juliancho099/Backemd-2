@@ -28,24 +28,28 @@ export class CartDao {
         return await CartModel.findByIdAndDelete(id);
     }
 
-    async removePurchasedProducts(cartId, products) {
-      
-        try {
+    async removePurchasedProducts(cartId, purchasedProducts) {
+      try {
+          console.log("🔹 Eliminando productos comprados del carrito:", cartId, purchasedProducts);
+  
           const cart = await CartModel.findById(cartId);
           if (!cart) {
-            throw new Error("Carrito no encontrado");
+              throw new Error("Carrito no encontrado");
           }
-          cart.products = cart.products.filter(p => 
-            !products.some(purchased => purchased.product.toString() === p._id.toString())
+          cart.products = cart.products.filter(product => 
+              purchasedProducts.some(purchased => purchased.product.toString() !== product.product.toString())
           );
-    
-          
+
+  
           await cart.save();
           return cart;
-        } catch (error) {
+      } catch (error) {
           console.error("❌ Error en removePurchasedProducts:", error);
           throw new Error("Error al eliminar productos comprados del carrito");
-        }
       }
+  }
+  
+  
+  
       
 }

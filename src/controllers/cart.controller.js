@@ -135,19 +135,19 @@ export class CartController {
       let unAvailableProducts = [];
 
       for (let i of cart.products) {
-        const product = await productDao.getById(i._id);
+        const product = await productDao.getById(i.product);
         if (!product) {
-          unAvailableProducts.push(i._id);
+          unAvailableProducts.push(i.product);
           continue;
         }
 
         if (product.stock < i.quantity) {
-          unAvailableProducts.push(i._id);
+          unAvailableProducts.push(i.product);
           continue;
         }
 
         product.stock -= i.quantity;
-        await productDao.update(i._id, { stock: product.stock });
+        await productDao.update(product._id, { stock: product.stock });
         total += product.price * i.quantity;
         products.push({ product: product._id, quantity: i.quantity });
       }
@@ -171,6 +171,7 @@ export class CartController {
         ticket,
         unAvailableProducts,
       });
+
     } catch (error) {
       console.error("❌ Error en purchaseCart:", error);
       res.status(500).json({ message: error.message });

@@ -14,4 +14,4 @@ cartRouter.post("/", cartController.create);
 cartRouter.post("/:cid/product/:pid", validate(cartDto), isUser, cartController.addProduct)
 cartRouter.put("/:cid", cartController.update);
 cartRouter.delete("/:cid", cartController.delete);
-cartRouter.post("/:cid/purchase", isUser, cartController.purchaseCart);
+cartRouter.post("/purchase/:cid", isUser, cartController.purchaseCart);
